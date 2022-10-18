@@ -67,17 +67,18 @@ print(lines[2])
 print(lines[3])
 
 # Green color in BGR 
-LINE_COLOR = (255, 0, 0) 
+# LINE_COLOR = (255, 255, 255) 
+LINE_COLOR = (0, 0, 0) 
 
 for x1, y1, x2, y2 in lines[0]:
     # cv2.line(image, start_point, end_point, color, thickness)
-    cv2.line(img, (x1,y1), (x2,y2), LINE_COLOR, 55)
+    cv2.line(img, (x1,y1), (x2,y2), LINE_COLOR, 10)
 
 for x1, y1, x2, y2 in lines[1]:
-    cv2.line(img, (x1,y1), (x2,y2), LINE_COLOR, 75)
+    cv2.line(img, (x1,y1), (x2,y2), LINE_COLOR, 10)
 
 for x1, y1, x2, y2 in lines[2]:
-    cv2.line(img, (x1,y1), (x2,y2), LINE_COLOR, 125)
+    cv2.line(img, (x1,y1), (x2,y2), LINE_COLOR, 10)
 
 plt.imshow(img)
 plt.title('Hough Lines')
