@@ -112,9 +112,9 @@ while(cap.isOpened()):
         #             lines_edges[int(b) + i, int(a) + j] = [0, 0, 255]
 
         # # Show the result
-        # cv2.imshow('frame', lines_edges)
-        # cv2.imwrite('line_intersections.png', lines_edges)
-        # cv2.waitKey(0)
+        # cv2.imshow('intersections', lines_edges)
+        # # cv2.imwrite('line_intersections.png', lines_edges)
+        # # cv2.waitKey(0)
 
 
     #----THE PREVIOUS ALGORITHM----#
