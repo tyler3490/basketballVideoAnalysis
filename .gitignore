@@ -131,3 +131,4 @@ dmypy.json
 /mask-rcnn/mask-rcnn-coco/frozen_inference_graph.pb
 /mask-rcnn/videos/beachvolley.mp4
 /mask-rcnn/output/*
+tennis_rally.mp4

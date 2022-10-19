@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 from houghlines_in_python_helpers import draw_lines, weighted_img
  
-image = mpimg.imread("court-detection/input/tennis.jpg")
+image = mpimg.imread("/Users/tyler/Documents/GitHub/basketballVideoAnalysis/court-detection/input/tennis.jpg")
 # image1copy = np.uint8(image)
 # gray_image = cv2.cvtColor(image1copy, cv2.COLOR_RGB2GRAY)
 gray_image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
