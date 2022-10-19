@@ -18,7 +18,7 @@ while(cap.isOpened()):
 
         # load the image
         # image = cv2.imread(args["image"])
-        cv2.imshow('normal', frame)
+        # cv2.imshow('normal', frame)
         # define the list of boundaries
         boundaries = [
             ([180, 180, 100], [255, 255, 255])
@@ -36,8 +36,8 @@ while(cap.isOpened()):
             output = cv2.bitwise_and(frame, frame, mask = mask)
 
             # show the images
-            cv2.imshow('maks', mask)
-            cv2.imshow('bitwise and', output)
+            # cv2.imshow('maks', mask)
+            # cv2.imshow('bitwise and', output)
             # cv2.imshow("images", np.hstack([frame, output]))
             # cv2.waitKey(0)
 
@@ -82,7 +82,8 @@ while(cap.isOpened()):
                 points.append(((x1 + 0.0, y1 + 0.0), (x2 + 0.0, y2 + 0.0)))
                 cv2.line(line_image, (x1, y1), (x2, y2), (255, 0, 0), 1)        
 
-        cv2.imshow('houghlines', line_image)
+        # cv2.imshow('houghlines', line_image)
+        cv2.imshow('houghlines', np.hstack([frame, line_image]))
         # cv2.waitKey(0)
 
         # lines_edges = cv2.addWeighted(output, 0.8, line_image, 1, 0)
