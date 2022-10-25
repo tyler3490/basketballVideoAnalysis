@@ -42,8 +42,8 @@ class CourtReference:
                            12: [*self.bottom_inner_line, self.left_inner_line[1], self.right_inner_line[1]]}
         self.line_width = 1
         self.court_width = 1117
-        # self.court_height = 2408
-        self.court_height = 8000
+        self.court_height = 2408
+        # self.court_height = 8000
         self.top_bottom_border = 549
         self.right_left_border = 274
         self.court_total_width = self.court_width + self.right_left_border * 2
@@ -58,7 +58,7 @@ class CourtReference:
         court = np.zeros((self.court_height + 2 * self.top_bottom_border, self.court_width + 2 * self.right_left_border), dtype=np.uint8)
         cv2.line(court, *self.baseline_top, 1, self.line_width)
         cv2.line(court, *self.baseline_bottom, 1, self.line_width)
-        # cv2.line(court, *self.net, 1, self.line_width)
+        cv2.line(court, *self.net, 1, self.line_width)
         cv2.line(court, *self.top_inner_line, 1, self.line_width)
         cv2.line(court, *self.bottom_inner_line, 1, self.line_width)
         cv2.line(court, *self.left_court_line, 1, self.line_width)

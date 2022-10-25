@@ -422,7 +422,7 @@ class CourtDetector:
                               (int(x + vx * self.v_width), int(y + vy * self.v_width))))
 
             # if less than 50 points were found detect court from the start instead of tracking
-            print(len(new_points))
+            # print(len(new_points))
             if len(new_points) < 50:
                 if self.dist > 20:
                     cv2.imshow('court', copy)
