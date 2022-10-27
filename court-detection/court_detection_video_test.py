@@ -138,7 +138,7 @@ def create_top_view(court_detector, detection_model, xy, fps):
     out.release()
 
 def detect_court():
-    videoin = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/3secQatarTest.mp4"
+    videoin = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/shortQatar.mp4"
     video = cv2.VideoCapture(videoin)
 
 
