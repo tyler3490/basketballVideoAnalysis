@@ -9,87 +9,136 @@ import matplotlib.pyplot as plt
 from court_detection import CourtDetector
 from ball_detection import BallDetector
 
-def calculate_ball_positions(court_detector, ball_positions):
+
+def draw_ball_position(frame, court_detector, xy, i):
+        """
+        Calculate the ball position of both players using the inverse transformation of the court and the x, y positions
+        """
+        inv_mats = court_detector.game_warp_matrix[i]
+        coord = xy
+        img = frame.copy()
+        # Ball locations
+        if coord is not None:
+          p = np.array(coord,dtype='float64')
+          ball_pos = np.array([p[0].item(), p[1].item()]).reshape((1, 1, 2))
+          transformed = cv2.perspectiveTransform(ball_pos, inv_mats)[0][0].astype('int64')
+          cv2.circle(frame, (transformed[0], transformed[1]), 35, (0,255,255), -1)
+        else:
+          pass
+        return img 
+
+def remove_outliers(x, y, coords):
+  ids = set(np.where(x > 50)[0]) & set(np.where(y > 50)[0])
+  for id in ids:
+    left, middle, right = coords[id-1], coords[id], coords[id+1]
+    if left is None:
+      left = [0]
+    if  right is None:
+      right = [0]
+    if middle is None:
+      middle = [0]
+    MAX = max(map(list, (left, middle, right)))
+    if MAX == [0]:
+      pass
+    else:
+      try:
+        coords[coords.index(tuple(MAX))] = None
+      except ValueError:
+        coords[coords.index(MAX)] = None
+
+def interpolation(coords):
+  coords =coords.copy()
+  x, y = [x[0] if x is not None else np.nan for x in coords], [x[1] if x is not None else np.nan for x in coords]
+
+  xxx = np.array(x) # x coords
+  yyy = np.array(y) # y coords
+
+  nons, yy = nan_helper(xxx)
+  xxx[nons]= np.interp(yy(nons), yy(~nons), xxx[~nons])
+  nans, xx = nan_helper(yyy)
+  yyy[nans]= np.interp(xx(nans), xx(~nans), yyy[~nans])
+
+  newCoords = [*zip(xxx,yyy)]
+
+  return newCoords
+
+def nan_helper(y):
+    """Helper to handle indices and logical indices of NaNs.
+
+    Input:
+        - y, 1d numpy array with possible NaNs
+    Output:
+        - nans, logical indices of NaNs
+        - index, a function, with signature indices= index(logical_indices),
+          to convert logical indices of NaNs to 'equivalent' indices
+    Example:
+        >>> # linear interpolation of NaNs
+        >>> nans, x= nan_helper(y)
+        >>> y[nans]= np.interp(x(nans), x(~nans), y[~nans])
     """
-    Calculate the feet position of both players using the inverse transformation of the court and the boxes
-    of both players
-    """
-    ball_x, ball_y = ball_positions[:, 0], ball_positions[:, 1]
-    inv_mats = court_detector.game_warp_matrix
-    positions_1 = []
+    return np.isnan(y), lambda z: z.nonzero()[0]
 
-    # Bottom player feet locations
-    for i, box in enumerate(ball_positions):
-        if box[0] is not None:
-            feet_pos = np.array([box[0].item(), box[1].item()]).reshape((1, 1, 2))
-            feet_court_pos = cv2.perspectiveTransform(feet_pos, inv_mats[i]).reshape(-1)
-            positions_1.append(feet_court_pos)
+def diff_xy(coords):
+  coords = coords.copy()
+  diff_list = []
+  for i in range(0, len(coords)-1):
+    if coords[i] is not None and coords[i+1] is not None:
+      point1 = coords[i]
+      point2 = coords[i+1]
+      diff = [abs(point2[0] - point1[0]), abs(point2[1] - point1[1])]
+      diff_list.append(diff)
+    else:
+      diff_list.append(None)
+  
+  xx, yy = np.array([x[0] if x is not None else np.nan for x in diff_list]), np.array([x[1] if x is not None else np.nan for x in diff_list])
+  
+  return xx, yy
 
-    # Smooth both feet locations
-    positions_1 = np.array(positions_1)
-    smoothed_1 = np.zeros_like(positions_1)
-    smoothed_1[:, 0] = signal.savgol_filter(positions_1[:, 0], 7, 2)
-    smoothed_1[:, 1] = signal.savgol_filter(positions_1[:, 1], 7, 2)
+# def create_top_view(court_detector, ball_detector):
+#     """
+#     Creates top view video of the gameplay
+#     """
+#     court = court_detector.court_reference.court.copy()
+#     court = cv2.line(court, *court_detector.court_reference.net, 255, 5)
+#     v_width, v_height = court.shape[::-1]
+#     court = cv2.cvtColor(court, cv2.COLOR_GRAY2BGR)
+#     out = cv2.VideoWriter('/Users/tyler/Documents/GitHub/basketballVideoAnalysis/court_detect_output/top_view.avi',
+#                           cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 30, (v_width, v_height))
+#     # ball location on court
+#     # smoothed_1, smoothed_2 = find_ball_position(ball_positions=ball_detector.xy_coordinates)
+#     smoothed_1 = calculate_ball_positions(court_detector=court_detector, ball_positions=ball_detector.xy_coordinates)
 
-    return smoothed_1
-
-def find_ball_position(ball_positions, verbose=1):
-    ball_x, ball_y = ball_positions[:, 0], ball_positions[:, 1]
-    smooth_x = signal.savgol_filter(ball_x, 3, 2)
-    smooth_y = signal.savgol_filter(ball_y, 3, 2)
-
-    # Ball position interpolation
-    x = np.arange(0, len(smooth_y))
-    indices = [i for i, val in enumerate(smooth_y) if np.isnan(val)]
-    x = np.delete(x, indices)
-    y1 = np.delete(smooth_y, indices)
-    y2 = np.delete(smooth_x, indices)
-    # ball_f2_y = interp1d(x, y1, kind='cubic', fill_value="extrapolate")
-    # ball_f2_x = interp1d(x, y2, kind='cubic', fill_value="extrapolate")
-    # LEFT OFF HERE, NEED TO USE THESE BALL COORDINATES AND THROW OUT ALL THE PLAYER STUFF 
-    ball_f2_y = interp1d(x, y1, fill_value="extrapolate")
-    ball_f2_x = interp1d(x, y2, fill_value="extrapolate")
-    xnew = np.linspace(0, len(ball_y), num=len(ball_y), endpoint=True)
-
-    coordinates = ball_f2_y(xnew)
-    # Find all peaks of the ball y index
-    peaks, _ = find_peaks(coordinates)
-    if verbose:
-        plt.plot(coordinates)
-        plt.plot(peaks, coordinates[peaks], "x")
-        plt.show()
-
-    neg_peaks, _ = find_peaks(coordinates * -1)
-    if verbose:
-        plt.plot(coordinates)
-        plt.plot(neg_peaks, coordinates[neg_peaks], "x")
-        plt.show()
-    # return np.array([ball_f2_x, ball_f2_y]) #THIS IS AN ARRAY OF THE BALL POSITIONS IN THE ENTIRE THING...I THINK 
-    return np.array([smooth_x, smooth_y]) #THIS IS AN ARRAY OF THE BALL POSITIONS IN THE ENTIRE THING...I THINK 
-
-def create_top_view(court_detector, ball_detector):
+#     for ball_pos_1 in zip(smoothed_1):
+#         frame = court.copy()
+#         frame = cv2.circle(frame, (int(ball_pos_1[0]), int(ball_pos_1[1])), 10, (0, 0, 255), 15)
+#         out.write(frame)
+#     out.release()
+#     cv2.destroyAllWindows()
+def create_top_view(court_detector, detection_model, xy, fps):
     """
     Creates top view video of the gameplay
     """
+    coords = xy[:]
     court = court_detector.court_reference.court.copy()
     court = cv2.line(court, *court_detector.court_reference.net, 255, 5)
     v_width, v_height = court.shape[::-1]
     court = cv2.cvtColor(court, cv2.COLOR_GRAY2BGR)
-    out = cv2.VideoWriter('/Users/tyler/Documents/GitHub/basketballVideoAnalysis/court_detect_output/top_view.avi',
-                          cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 30, (v_width, v_height))
-    # ball location on court
-    # smoothed_1, smoothed_2 = find_ball_position(ball_positions=ball_detector.xy_coordinates)
-    smoothed_1 = calculate_ball_positions(court_detector=court_detector, ball_positions=ball_detector.xy_coordinates)
-
-    for ball_pos_1 in zip(smoothed_1):
+    out = cv2.VideoWriter('VideoOutput/minimap.mp4',cv2.VideoWriter_fourcc('X', 'V', 'I', 'D'), fps, (v_width, v_height))
+    # players location on court
+    smoothed_1, smoothed_2 = detection_model.calculate_feet_positions(court_detector)
+    i = 0 
+    for feet_pos_1, feet_pos_2 in zip(smoothed_1, smoothed_2):
         frame = court.copy()
-        frame = cv2.circle(frame, (int(ball_pos_1[0]), int(ball_pos_1[1])), 10, (0, 0, 255), 15)
+        frame = cv2.circle(frame, (int(feet_pos_1[0]), int(feet_pos_1[1])), 45, (255, 0, 0), -1)
+        if feet_pos_2[0] is not None:
+            frame = cv2.circle(frame, (int(feet_pos_2[0]), int(feet_pos_2[1])), 45, (255, 0, 0), -1)
+        draw_ball_position(frame, court_detector, coords[i], i)
+        i += 1
         out.write(frame)
     out.release()
-    cv2.destroyAllWindows()
 
 def detect_court():
-    videoin = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/shortQatar.mp4"
+    videoin = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/3secQatarTest.mp4"
     video = cv2.VideoCapture(videoin)
 
 
@@ -111,7 +160,7 @@ def detect_court():
 
     # frame counter
     frame_i = 0
-
+    coords = []
     # time counter
     total_time = 0
 
@@ -141,7 +190,7 @@ def detect_court():
             #     pose_extractor.extract_pose(frame, detection_model.player_1_boxes)
 
             ball_detector.detect_ball(court_detector.delete_extra_parts(frame))
-
+            
             total_time += (time.time() - start_time)
             print('Processing frame %d/%d  FPS %04f' % (frame_i, length, frame_i / total_time), '\r', end='')
             # if not frame_i % 100:
@@ -150,10 +199,15 @@ def detect_court():
             break
     # print('Processing frame %d/%d  FPS %04f' % (length, length, length / total_time), '\n', end='')
     print('Processing completed')
+    coords = ball_detector.xy_coordinates
     video.release()
     cv2.destroyAllWindows()
-
-    # create_top_view(court_detector, ball_detector)
+    # Remove Outliers 
+    # x, y = diff_xy(coords)
+    # remove_outliers(x, y, coords)
+    # # Interpolation
+    # coords = interpolation(coords)
+    # create_top_view(court_detector=court_detector, ball_detector=ball_detector, xy=coords, fps=fps)
 
     add_data_to_video(input_video=videoin, court_detector=court_detector, show_video=True, with_frame=1, output_folder='/Users/tyler/Documents/GitHub/basketballVideoAnalysis/court_detect_output', output_file='output', ball_detector=ball_detector)
 
@@ -232,7 +286,7 @@ def add_data_to_video(input_video, court_detector, show_video, with_frame, outpu
         # img = mark_player_box(img, player2_boxes, frame_number)
         # img_no_frame = mark_player_box(img_no_frame, player1_boxes, frame_number)
         # img_no_frame = mark_player_box(img_no_frame, player2_boxes, frame_number)
-MAYBE TRY AND PUT THE COURT CODE INTO OUR EXSISTING YOLO CODE, THAT WAY WE WILL AT LEAST HAVE THE COURT. THEN WE CAN USE THE BALL BOUNDING BOX LIKE THE PLAYER BOX 
+
         # add ball location
         img = ball_detector.mark_positions(img, frame_num=frame_number)
         img_no_frame = ball_detector.mark_positions(img_no_frame, frame_num=frame_number, ball_color='black')
@@ -240,6 +294,7 @@ MAYBE TRY AND PUT THE COURT CODE INTO OUR EXSISTING YOLO CODE, THAT WAY WE WILL 
         if (ball_detector.xy_coordinates[frame_number][0]) is not None:
             print(ball_detector.xy_coordinates[frame_number][0])
             print(ball_detector.xy_coordinates[frame_number][1])
+            ball_x = ball_detector.xy_coordinates[frame_number][0]
             ball_y = ball_detector.xy_coordinates[frame_number][1]
             if (ball_y < top_baseline or ball_y > bottom_baseline):
                 cv2.putText(img=img, text="OUT!!!", fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(0,255,255), org=(100, 100))
