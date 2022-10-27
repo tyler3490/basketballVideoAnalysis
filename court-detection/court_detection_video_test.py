@@ -8,6 +8,7 @@ from scipy.signal import find_peaks
 import matplotlib.pyplot as plt
 from court_detection import CourtDetector
 from ball_detection import BallDetector
+import math
 
 
 def draw_ball_position(frame, court_detector, xy, i):
@@ -138,7 +139,7 @@ def create_top_view(court_detector, detection_model, xy, fps):
     out.release()
 
 def detect_court():
-    videoin = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/shortQatar.mp4"
+    videoin = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/3secOutcall.mp4"
     video = cv2.VideoCapture(videoin)
 
 
@@ -260,6 +261,11 @@ def add_data_to_video(input_video, court_detector, show_video, with_frame, outpu
     # initialize frame counters
     frame_number = 0
     orig_frame = 0
+    prev_pos = [0, 0]
+    est_vel = [0,0]
+    prev_est_vel = [0,0]
+    bounce_count = 0
+    bounce_thresh = 10
     while True:
         orig_frame += 1
         print('Creating new videos frame %d/%d  ' % (orig_frame, length), '\r', end='')
@@ -290,15 +296,39 @@ def add_data_to_video(input_video, court_detector, show_video, with_frame, outpu
         # add ball location
         img = ball_detector.mark_positions(img, frame_num=frame_number)
         img_no_frame = ball_detector.mark_positions(img_no_frame, frame_num=frame_number, ball_color='black')
-        
         if (ball_detector.xy_coordinates[frame_number][0]) is not None:
-            print(ball_detector.xy_coordinates[frame_number][0])
-            print(ball_detector.xy_coordinates[frame_number][1])
             ball_x = ball_detector.xy_coordinates[frame_number][0]
             ball_y = ball_detector.xy_coordinates[frame_number][1]
-            if (ball_y < top_baseline or ball_y > bottom_baseline):
-                cv2.putText(img=img, text="OUT!!!", fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(0,255,255), org=(100, 100))
-                print("OUT!!!")
+            ball_pos = [ball_x, ball_y]
+            # prev_pos = ball_pos
+            # est_vel = [0,0]
+            # prev_est_vel = [0,0]
+            # bounce_count = 0
+            # bounce_thresh = 10
+            print(ball_detector.xy_coordinates[frame_number][0])
+            print(ball_detector.xy_coordinates[frame_number][1])
+
+            est_vel[0] = (ball_pos[0] - prev_pos[0])
+            est_vel[1] = (ball_pos[1] - prev_pos[1])
+
+            # check if the sign of the velocity has changed
+            if math.copysign(1, est_vel[0]) != math.copysign(1, est_vel[1]) or math.copysign(1,est_vel[1]) != math.copysign(1, prev_est_vel[1]):
+                # check for bounces from large change in velocity
+                dvx = abs(est_vel[0] - prev_est_vel[0])
+                dvy = abs(est_vel[1] - prev_est_vel[1])
+                change_vel = math.sqrt(dvx*dvx + dvy*dvy)
+                if change_vel > bounce_thresh:
+                    bounce_count += 1
+                    if (ball_y < top_baseline or ball_y > bottom_baseline): #if we are here the ball has "bounced"
+                        cv2.putText(img=img, text="OUT!!!", fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(0,255,255), org=(100, 100))
+                        print("OUT!!!")
+            # update previous state trackers
+            prev_est_vel = est_vel[:]
+            prev_pos = ball_pos[:]
+
+            # if (ball_y < top_baseline or ball_y > bottom_baseline):
+            #     cv2.putText(img=img, text="OUT!!!", fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(0,255,255), org=(100, 100))
+            #     print("OUT!!!")
     # [676.44324, 255.8075, 1335.0889, 253.20589] 1, 3 vertical measurements, 2, 4 horizontal. its the location of 2 points that are connected 
         
         # print(court_detector.baseline_top[1])
