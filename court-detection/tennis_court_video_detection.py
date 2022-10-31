@@ -5,7 +5,8 @@ import cv2
 import scipy.ndimage as ndi
 import poly_point_isect as bot
 
-video = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/soccerdemo.mp4"
+# video = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/soccerdemo.mp4"
+video = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/soccercamerapan.mp4"
 cap = cv2.VideoCapture(video)
 while(cap.isOpened()): 
     ret, frame = cap.read()
@@ -23,6 +24,7 @@ while(cap.isOpened()):
         boundaries = [
             # ([180, 180, 100], [255, 255, 255])
             ([125, 149, 96], [255, 255, 255])
+            # ([36, 25, 25], [86, 255, 255])
         ]
 
         # loop over the boundaries
@@ -37,10 +39,10 @@ while(cap.isOpened()):
             output = cv2.bitwise_and(frame, frame, mask = mask)
 
             # show the images
-            cv2.imshow('maks', mask)
-            cv2.imshow('bitwise and', output)
-            cv2.imshow("images", np.hstack([frame, output]))
-            cv2.waitKey(0)
+            # cv2.imshow('maks', mask)
+            # cv2.imshow('bitwise and', output)
+            # cv2.imshow("images", np.hstack([frame, output]))
+            # cv2.waitKey(0)
 
         gray = cv2.cvtColor(output,cv2.COLOR_BGR2GRAY)
 
@@ -57,7 +59,7 @@ while(cap.isOpened()):
         # min_line_length = 40  # minimum number of pixels making up a line
         # max_line_gap = 5  # maximum gap in pixels between connectable line segments
 
-        low_threshold = 0
+        low_threshold = 5
         high_threshold = 200
         edges = cv2.Canny(gray, low_threshold, high_threshold)
         dilated = cv2.dilate(edges, np.ones((2,2), dtype=np.uint8))
@@ -67,8 +69,8 @@ while(cap.isOpened()):
 
         rho = 1  # distance resolution in pixels of the Hough grid
         theta = np.pi / 180  # angular resolution in radians of the Hough grid
-        threshold = 5 # minimum number of votes (intersections in Hough grid cell)
-        min_line_length = 5  # minimum number of pixels making up a line
+        threshold = 10 # minimum number of votes (intersections in Hough grid cell)
+        min_line_length = 20  # minimum number of pixels making up a line
         max_line_gap = 5 # maximum gap in pixels between connectable line segments
         line_image = np.copy(output) * 0  # creating a blank to draw lines on
 
