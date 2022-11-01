@@ -5,8 +5,8 @@ import cv2
 import scipy.ndimage as ndi
 import poly_point_isect as bot
 
-# video = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/soccerdemo.mp4"
-video = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/soccercamerapan.mp4"
+video = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/soccerdemo.mp4"
+# video = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/soccercamerapan.mp4"
 cap = cv2.VideoCapture(video)
 while(cap.isOpened()): 
     ret, frame = cap.read()
@@ -22,8 +22,8 @@ while(cap.isOpened()):
         # cv2.imshow('normal', frame)
         # define the list of boundaries
         boundaries = [
-            # ([180, 180, 100], [255, 255, 255])
-            ([125, 149, 96], [255, 255, 255])
+            ([180, 180, 100], [255, 255, 255])
+            # ([125, 149, 96], [255, 255, 255])
             # ([36, 25, 25], [86, 255, 255])
         ]
 
@@ -78,15 +78,20 @@ while(cap.isOpened()):
         # Output "lines" is an array containing endpoints of detected line segments
 
         lines = cv2.HoughLinesP(dilated, rho, theta, threshold, np.array([]), min_line_length, max_line_gap)
-
-        points = []
-        for line in lines:
-            for x1, y1, x2, y2 in line:
-                points.append(((x1 + 0.0, y1 + 0.0), (x2 + 0.0, y2 + 0.0)))
-                cv2.line(line_image, (x1, y1), (x2, y2), (255, 0, 0), 1)        
+        
+        # lsd = cv2.createLineSegmentDetector(0)
+        # lines_lsd = lsd.detect(edges)[0]
+        # #Draw detected lines in the image
+        # drawn_img = lsd.drawSegments(frame,lines)
+        # points = []
+        # for line in lines:
+        #     for x1, y1, x2, y2 in line:
+        #         points.append(((x1 + 0.0, y1 + 0.0), (x2 + 0.0, y2 + 0.0)))
+        #         cv2.line(line_image, (x1, y1), (x2, y2), (255, 0, 0), 1)        
 
         # cv2.imshow('houghlines', line_image)
-        cv2.imshow('houghlines', np.hstack([frame, line_image]))
+        cv2.imshow('houghlines', lines)
+        # cv2.imshow('houghlines', np.hstack([frame, line_image]))
         # cv2.waitKey(0)
 
         # lines_edges = cv2.addWeighted(output, 0.8, line_image, 1, 0)
