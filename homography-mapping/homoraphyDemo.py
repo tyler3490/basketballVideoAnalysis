@@ -4,7 +4,8 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-image = '/Users/tyler/Documents/GitHub/basketballVideoAnalysis/swingvisioncap.jpg'
+# image = '/Users/tyler/Documents/GitHub/basketballVideoAnalysis/swingvisioncap.jpg'
+image = '/Users/tyler/Documents/GitHub/basketballVideoAnalysis/courtScreenCap.jpg'
 # Read source image.
 # img_src = cv2.imread('/Users/tyler/Documents/GitHub/basketballVideoAnalysis/courtScreenCap.jpg')
 img_src = cv2.imread(image)
@@ -12,26 +13,26 @@ img_src = cv2.imread(image)
 # Four corners of the 3D court + mid-court circle point in source image
 # Start top-left corner and go anti-clock wise + mid-court circle point
 # courtScreenCap
-# pts_src = np.array([
-#     [180, 1100],       # left bottom - bottom corner
-#     # [400, 308],     # middle bottom corner
-#     [1915, 1083],     # right bottom - bottom corner
-#     # [798, 220],     # right bottom - top corner
-#     [1607, 276],     # top right rorner
-#     [486, 286],     # top left corner
-#     # [3, 201]        # left bottom - top corner
-#     ])   
-
-# swingvisioncap
 pts_src = np.array([
-    [101, 880],       # left bottom - bottom corner
+    [180, 1100],       # left bottom - bottom corner
     # [400, 308],     # middle bottom corner
-    [2449, 864],     # right bottom - bottom corner
+    [1915, 1083],     # right bottom - bottom corner
     # [798, 220],     # right bottom - top corner
-    [1474, 311],     # top right rorner
-    [906, 324],     # top left corner
+    [1607, 276],     # top right rorner
+    [486, 286],     # top left corner
     # [3, 201]        # left bottom - top corner
     ])   
+
+# swingvisioncap
+# pts_src = np.array([
+#     [101, 880],       # left bottom - bottom corner
+#     # [400, 308],     # middle bottom corner
+#     [2449, 864],     # right bottom - bottom corner
+#     # [798, 220],     # right bottom - top corner
+#     [1474, 311],     # top right rorner
+#     [906, 324],     # top left corner
+#     # [3, 201]        # left bottom - top corner
+#     ])   
 
 # pts_src = np.array([
 #     [1, 258],       # left bottom - bottom corner

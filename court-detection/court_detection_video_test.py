@@ -146,7 +146,7 @@ def detect_court():
 
 
     # initialize extractors
-    court_detector = CourtDetector(verbose=True)
+    court_detector = CourtDetector()
     ball_detector = BallDetector('/Users/tyler/Documents/GitHub/basketballVideoAnalysis/court-detection/tracknet_weights_2_classes.pth', out_channels=2)
     # detection_model = DetectionModel(dtype=dtype)
     # pose_extractor = PoseExtractor(person_num=1, box=stickman_box, dtype=dtype) if stickman else None
@@ -175,7 +175,7 @@ def detect_court():
         if ret:
             if frame_i == 1:
                 start_time = time.time()
-                court_detector.detect(frame, verbose=True)
+                court_detector.detect(frame, verbose=False)
                 print(f'Court detection {"Success" if court_detector.success_flag else "Failed"}')
                 print(f'Time to detect court :  {time.time() - start_time} seconds')
 
