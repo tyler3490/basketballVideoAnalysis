@@ -11,7 +11,7 @@ class CourtDetector:
     """
     Detecting and tracking court in frame
     """
-    def __init__(self, verbose=1):
+    def __init__(self, verbose=True):
         self.verbose = verbose
         self.colour_threshold = 200
         self.dist_tau = 3
@@ -41,7 +41,7 @@ class CourtDetector:
         self.frame_points = None
         self.dist = 5
 
-    def detect(self, frame, verbose=0):
+    def detect(self, frame, verbose=True):
         """
         Detecting the court in the frame
         """
@@ -487,7 +487,7 @@ def display_lines_on_frame(frame, horizontal=(), vertical=()):
     cv2.line(frame, (int(len(frame[0]) * 3 / 7), 0), (int(len(frame[0]) * 3 / 7), 719), (255, 255, 0), 2)'''
     for line in horizontal:
         x1, y1, x2, y2 = line
-        cv2.line(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+failed here on the line detection...        cv2.line(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
         cv2.circle(frame, (x1, y1), 1, (255, 0, 0), 2)
         cv2.circle(frame, (x2, y2), 1, (255, 0, 0), 2)
 

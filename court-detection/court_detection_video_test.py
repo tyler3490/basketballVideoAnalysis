@@ -139,14 +139,14 @@ def create_top_view(court_detector, detection_model, xy, fps):
     out.release()
 
 def detect_court():
-    videoin = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/outofboundsbouncerublev.mp4"
+    videoin = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/shortQatar.mp4"
     video = cv2.VideoCapture(videoin)
 
 
 
 
     # initialize extractors
-    court_detector = CourtDetector()
+    court_detector = CourtDetector(verbose=True)
     ball_detector = BallDetector('/Users/tyler/Documents/GitHub/basketballVideoAnalysis/court-detection/tracknet_weights_2_classes.pth', out_channels=2)
     # detection_model = DetectionModel(dtype=dtype)
     # pose_extractor = PoseExtractor(person_num=1, box=stickman_box, dtype=dtype) if stickman else None
@@ -174,10 +174,10 @@ def detect_court():
 
         if ret:
             if frame_i == 1:
-                court_detector.detect(frame)
+                start_time = time.time()
+                court_detector.detect(frame, verbose=True)
                 print(f'Court detection {"Success" if court_detector.success_flag else "Failed"}')
                 print(f'Time to detect court :  {time.time() - start_time} seconds')
-                start_time = time.time()
 
             # cv2.imshow('court test', frame)
             # img = court_detector.add_court_overlay(img, overlay_color=(0, 0, 255), frame_num=frame_number)
