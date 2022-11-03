@@ -103,8 +103,8 @@ while(cap.isOpened()):
         img_src2 = ogFrame
         img_out = cv2.warpPerspective(img_src2, h, (img_dst.shape[1], img_dst.shape[0]))
         # cv2.imshow("Warped", img_out)
-        cv2.imshow("another title", img_out)
-        cv2.imshow("title", frame)
+        cv2.imshow("Warped", img_out)
+        cv2.imshow("lines", frame)
         # cv2.waitKey(0)
 
         # cv2.imwrite("/Users/tyler/Documents/GitHub/basketballVideoAnalysis/homography-mapping/output/courtViewResult.jpg", img_out)		
