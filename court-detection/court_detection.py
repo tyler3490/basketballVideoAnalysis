@@ -516,7 +516,7 @@ def display_lines_and_points_on_frame(frame, lines=(), points=(), line_color=(0,
         frame = cv2.circle(frame, p, 2, point_color, 2)
 
     cv2.imshow('court', frame)
-    if cv2.waitKey(0) & 0xff == 27:
+    if cv2.waitKey(0):
         cv2.destroyAllWindows()
     return frame
 

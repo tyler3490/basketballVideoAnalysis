@@ -84,11 +84,11 @@ while(cap.isOpened()):
         # lines_lsd = lsd.detect(edges)[0]
         # #Draw detected lines in the image
         # drawn_img = lsd.drawSegments(frame,lines)
-        points = []
-        for line in lines:
-            for x1, y1, x2, y2 in line:
-                points.append(((x1 + 0.0, y1 + 0.0), (x2 + 0.0, y2 + 0.0)))
-                cv2.line(line_image, (x1, y1), (x2, y2), (255, 0, 0), 1)        
+        # points = []
+        # for line in lines:
+        #     for x1, y1, x2, y2 in line:
+        #         points.append(((x1 + 0.0, y1 + 0.0), (x2 + 0.0, y2 + 0.0)))
+        #         cv2.line(line_image, (x1, y1), (x2, y2), (255, 0, 0), 1)        
 
         # cv2.imshow('houghlines', line_image)
         # cv2.imshow('houghlines', lines)
@@ -98,30 +98,30 @@ while(cap.isOpened()):
         lines_edges = cv2.addWeighted(output, 0.8, line_image, 1, 0)
         print(lines_edges.shape)
 
-        intersections = bot.isect_segments(points)
-        print(intersections)
+        # intersections = bot.isect_segments(points)
+        # print(intersections)
 
-        for idx, inter in enumerate(intersections):
-            a, b = inter
-            match = 0
-            for other_inter in intersections[idx:]:
-                c, d = other_inter
-                if abs(c-a) < 8 and abs(d-b) < 8:
-                    match = 1
-                    if other_inter in intersections:
-                        intersections.remove(other_inter)
-                        intersections[idx] = ((c+a)/2, (d+b)/2)
+        # for idx, inter in enumerate(intersections):
+        #     a, b = inter
+        #     match = 0
+        #     for other_inter in intersections[idx:]:
+        #         c, d = other_inter
+        #         if abs(c-a) < 8 and abs(d-b) < 8:
+        #             match = 1
+        #             if other_inter in intersections:
+        #                 intersections.remove(other_inter)
+        #                 intersections[idx] = ((c+a)/2, (d+b)/2)
 
-            if match == 0:
-                intersections.remove(inter)
+        #     if match == 0:
+        #         intersections.remove(inter)
 
-        for inter in intersections:
-            a, b = inter
-            for i in range(6):
-                for j in range(6):
-                    lines_edges[int(b) + i, int(a) + j] = [0, 0, 255]
+        # for inter in intersections:
+        #     a, b = inter
+        #     for i in range(6):
+        #         for j in range(6):
+        #             lines_edges[int(b) + i, int(a) + j] = [0, 0, 255]
 
-        # Show the result
+        # # Show the result
         cv2.imshow('intersections', lines_edges)
         # cv2.imwrite('line_intersections.png', lines_edges)
         # cv2.waitKey(0)

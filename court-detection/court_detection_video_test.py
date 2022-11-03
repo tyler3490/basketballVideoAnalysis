@@ -139,7 +139,7 @@ def create_top_view(court_detector, detection_model, xy, fps):
     out.release()
 
 def detect_court():
-    videoin = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/shortQatar.mp4"
+    videoin = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/2sec_tennis_test.mp4"
     video = cv2.VideoCapture(videoin)
 
 
@@ -175,7 +175,7 @@ def detect_court():
         if ret:
             if frame_i == 1:
                 start_time = time.time()
-                court_detector.detect(frame, verbose=False)
+                court_detector.detect(frame, verbose=True)
                 print(f'Court detection {"Success" if court_detector.success_flag else "Failed"}')
                 print(f'Time to detect court :  {time.time() - start_time} seconds')
 
