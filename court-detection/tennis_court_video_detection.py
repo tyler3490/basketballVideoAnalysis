@@ -5,9 +5,9 @@ import cv2
 import scipy.ndimage as ndi
 import poly_point_isect as bot
 
-# video = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/soccerdemo.mp4"
+video = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/soccerdemo.mp4"
 # video = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/soccercamerapan.mp4"
-video = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/3secQatarTest.mp4"
+# video = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/3secQatarTest.mp4"
 cap = cv2.VideoCapture(video)
 while(cap.isOpened()): 
     ret, frame = cap.read()
@@ -123,6 +123,7 @@ while(cap.isOpened()):
 
         # # Show the result
         cv2.imshow('intersections', lines_edges)
+        cv2.imshow('fdsa', lines)
         # cv2.imwrite('line_intersections.png', lines_edges)
         # cv2.waitKey(0)
 

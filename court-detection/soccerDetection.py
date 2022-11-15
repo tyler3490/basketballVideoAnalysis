@@ -26,8 +26,8 @@
 import cv2
 import numpy as np
 
-video = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/soccerdemo.mp4"
-# video = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/soccercamerapan.mp4"
+# video = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/soccerdemo.mp4"
+video = "/Users/tyler/Documents/GitHub/basketballVideoAnalysis/soccercamerapan.mp4"
 cap = cv2.VideoCapture(video)
 while(cap.isOpened()): 
     ret, frame = cap.read()
